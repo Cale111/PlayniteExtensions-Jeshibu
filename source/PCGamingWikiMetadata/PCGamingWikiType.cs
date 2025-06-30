@@ -60,6 +60,12 @@ public class Video
     public const string VR = "VR support";
 }
 
+public class API
+{
+    public const string RenderingAPI = "Rendering API";
+    public const string Architecture = "Architecture";
+}
+
 public class VRHeadsets
 {
     public const string HTCVive = "HTC Vive";

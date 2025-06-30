@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Collections.Generic;
 using HtmlAgilityPack;
 using System.Text.RegularExpressions;
@@ -30,6 +31,8 @@ public class PCGamingWikiHTMLParser
         ParseCloudSync();
         ParseMultiplayer();
         ParseVideo();
+        ParseRenderingAPI();
+        ParseArchitecture();
         ParseVR();
     }
 
@@ -73,7 +76,7 @@ public class PCGamingWikiHTMLParser
 
         if (table != null)
         {
-            return table.SelectNodes($"//tr[@class='{rowClass}']");
+            return table.SelectNodes($".//tr[@class='{rowClass}']");
         }
 
         return new List<HtmlNode>();
@@ -91,6 +94,95 @@ public class PCGamingWikiHTMLParser
         }
 
         return false;
+    }
+
+    private void ParseArchitecture()
+    {
+        var tableId = "table-api-executable";
+
+        var headerRows = SelectTableRowsByClass(tableId, "template-infotable-head table-api-head-row");
+        HtmlNode headerRow = headerRows.Count > 0 ? headerRows[0] : null;
+
+        var archMapping = new Dictionary<int, string>();
+
+        int colIndex = 0;
+        foreach (HtmlNode header in headerRow.SelectNodes(".//th"))
+        {
+            if (header.Attributes["class"].Value == "table-api-head-support")
+            {
+                string archName = header.InnerText.Trim();
+
+                HtmlNode abbrNode = header.SelectSingleNode(".//abbr");
+                if (abbrNode != null)
+                {
+                    archName = abbrNode.InnerText.Trim();
+                }
+                archMapping[colIndex] = archName;
+            }
+            colIndex++;
+        }
+        var rows = SelectTableRowsByClass(tableId, "template-infotable-body table-api-body-row");
+        foreach (HtmlNode row in rows)
+        {
+            string os = "";
+            var ratings = new Dictionary<string, string>();
+
+            int currentIndex = 0;
+            foreach (HtmlNode cell in row.SelectNodes(".//th|td"))
+            {
+                if (cell.Attributes["class"].Value == "table-api-body-parameter")
+                {
+                    os = cell.FirstChild.InnerText.Trim();
+                }
+                else if (cell.Attributes["class"].Value == "table-api-body-support" && archMapping.ContainsKey(currentIndex))
+                {
+                    string rating = cell.FirstChild.Attributes["title"].Value;
+                    ratings[archMapping[currentIndex]] = rating;
+                }
+                currentIndex++;
+            }
+
+            this.gameController.AddArchitecture(os, ratings);
+        }
+    }
+
+    private void ParseRenderingAPI()
+    {
+        var rows = SelectTableRowsByClass("table-api", "template-infotable-body table-api-body-row");
+        string api = "";
+        string version = "";
+        string rating = "";
+
+        foreach (HtmlNode row in rows)
+        {
+            foreach (HtmlNode child in row.SelectNodes(".//th|td"))
+            {
+                switch (child.Attributes["class"].Value)
+                {
+                    case "table-api-body-parameter":
+                        api = child.FirstChild.InnerText.Trim();
+                        break;
+                    case "table-api-body-support":
+                        if (child.FirstChild.NodeType == HtmlNodeType.Text)
+                        {
+                            version = WebUtility.HtmlDecode(child.FirstChild.InnerText.Trim());
+                        }
+                        else
+                        {
+                            rating = child.FirstChild.Attributes["title"].Value;
+                        }
+
+                        break;
+                    case "table-settings-api-body-notes":
+                        break;
+                }
+            }
+
+            this.gameController.AddRenderingAPI(api, version, rating);
+            api = "";
+            version = "";
+            rating = "";
+        }
     }
 
     private void ParseVR()

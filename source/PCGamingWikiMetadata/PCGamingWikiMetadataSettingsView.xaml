@@ -201,6 +201,12 @@
                     <StackPanel Margin="5">
                         <CheckBox IsChecked="{Binding Settings.ImportTagNoCloudSaves}" Content="{DynamicResource LOCPCGWSettingsImportTagNoCloudSaves}"/>
                     </StackPanel>
+                    <StackPanel Margin="5">
+                        <CheckBox IsChecked="{Binding Settings.ImportTagRenderingAPI}" Content="{DynamicResource LOCPCGWSettingsImportTagRenderingAPI}"/>
+                    </StackPanel>
+                    <StackPanel Margin="5">
+                        <CheckBox IsChecked="{Binding Settings.ImportTagArchitecture}" Content="{DynamicResource LOCPCGWSettingsImportTagArchitecture}"/>
+                    </StackPanel>
                 </StackPanel>
             </ScrollViewer>
         </TabItem>

@@ -27,6 +27,10 @@ public class PCGamingWikiMetadataSettings: BulkImportPluginSettings
     public bool ImportTagArtStyle { get { return importTagArtStyle; } set { SetValue(ref importTagArtStyle, value); } }
     private bool importTagNoCloudSaves = true;
     public bool ImportTagNoCloudSaves { get { return importTagNoCloudSaves; } set { SetValue(ref importTagNoCloudSaves, value); } }
+    private bool importTagRenderingAPI = false;
+    public bool ImportTagRenderingAPI { get { return importTagRenderingAPI; } set { SetValue(ref importTagRenderingAPI, value); } }
+    private bool importTagArchitecture = false;
+    public bool ImportTagArchitecture { get { return importTagArchitecture; } set { SetValue(ref importTagArchitecture, value); } }
 
     private bool importXboxPlayAnywhere = true;
     public bool ImportXboxPlayAnywhere { get { return importXboxPlayAnywhere; } set { SetValue(ref importXboxPlayAnywhere, value); } }

@@ -168,6 +168,11 @@ public class PCGWGame : GenericItemOption
         }
     }
 
+    public void AddArchitecture(string os, string architecture)
+    {
+        AddTag($"{os} {architecture}");
+    }
+
     public void SetFramerate60()
     {
         AddFeature("60 FPS");

@@ -47,6 +47,8 @@ public class PCGWGameController
             { PCGamingWikiType.Video.FPS120Plus, new Func<bool>( () => this.settings.ImportFeatureFramerate120) },
             { PCGamingWikiType.Video.FPS60, new Func<bool>( () => this.settings.ImportFeatureFramerate60) },
             { PCGamingWikiType.Video.Ultrawide, new Func<bool>( () => this.settings.ImportFeatureUltrawide) },
+            { PCGamingWikiType.API.RenderingAPI, new Func<bool>( () => this.settings.ImportTagRenderingAPI) },
+            { PCGamingWikiType.API.Architecture, new Func<bool>( () => this.settings.ImportTagArchitecture) },
             { PCGamingWikiType.Video.VR, new Func<bool>( () => this.settings.ImportFeatureVR) },
             { PCGamingWikiType.VRHeadsets.HTCVive, new Func<bool>( () => this.settings.ImportFeatureVRHTCVive) },
             { PCGamingWikiType.VRHeadsets.OculusRift, new Func<bool>( () => this.settings.ImportFeatureVROculusRift) },
@@ -184,6 +186,41 @@ public class PCGWGameController
                 case PCGamingWikiType.Rating.Unknown:
                     break;
             }
+        }
+    }
+
+    public void AddArchitecture(string os, Dictionary<string, string> ratings)
+    {
+        if (IsSettingDisabled(PCGamingWikiType.API.Architecture))
+        {
+            return;
+        }
+
+        foreach (var entry in ratings)
+        {
+            string architecture = entry.Key;
+            string rating = entry.Value;
+
+            if (NativeOrLimitedSupport(rating))
+            {
+                this.Game.AddArchitecture(os, architecture);
+            }
+        }
+    }
+
+    public void AddRenderingAPI(string api, string version, string rating)
+    {
+        if (IsSettingDisabled(PCGamingWikiType.API.RenderingAPI))
+        {
+            return;
+        }
+
+        if (rating == "")
+        {
+            this.Game.AddTag($"{api} {version}");
+        } else if (NativeOrLimitedSupport(rating))
+        {
+            this.Game.AddTag(api);
         }
     }
 
